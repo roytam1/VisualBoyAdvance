@@ -121,7 +121,7 @@ local size_t memWrite(const void *buffer, size_t size, size_t count,
     return 0;
   }
 
-  if(total > file->available) {
+  if(total > (size_t)file->available) {
     total = file->available;
   }
   memcpy(file->next, buffer, total);
@@ -143,7 +143,7 @@ local size_t memRead(void *buffer, size_t size, size_t count,
   if(file->available == 0)
     return -1;
 
-  if(total > file->available) {
+  if(total > (size_t)file->available) {
     total = file->available;
   }
   memcpy(buffer, file->next, total);
