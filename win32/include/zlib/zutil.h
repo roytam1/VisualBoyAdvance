@@ -13,7 +13,7 @@
 #ifndef _Z_UTIL_H
 #define _Z_UTIL_H
 
-#include "zlib.h"
+#include <zlib.h>
 
 #ifdef STDC
 #  include <stddef.h>

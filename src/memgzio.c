@@ -17,7 +17,7 @@
 
 #include "memgzio.h"
 
-struct internal_state {int dummy;}; /* for buggy compilers */
+/*struct internal_state {int dummy;};*/ /* for buggy compilers */
 
 #ifndef Z_BUFSIZE
 #  ifdef MAXSEG_64K
