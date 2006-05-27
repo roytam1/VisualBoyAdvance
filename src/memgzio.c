@@ -125,7 +125,7 @@ local size_t memWrite(const void *buffer, size_t size, size_t count,
     total = file->available;
   }
   memcpy(file->next, buffer, total);
-  file->available -= total;
+  file->available -= (int)total;
   file->next += total;
   return total;
 }
@@ -147,7 +147,7 @@ local size_t memRead(void *buffer, size_t size, size_t count,
     total = file->available;
   }
   memcpy(buffer, file->next, total);
-  file->available -= total;
+  file->available -= (int)total;
   file->next += total;
   return total;
 }
@@ -170,7 +170,7 @@ local int memPutc(int c, MEMFILE *file)
 
 local long memTell(MEMFILE *f)
 {
-  return (f->next - f->memory) - 8;
+  return (long)(f->next - f->memory) - 8;
 }
 
 local int memError(MEMFILE *f)
@@ -197,7 +197,7 @@ local int memPrintf(MEMFILE *f, const char *format, ...)
   len = vsprintf(buffer, format, list);
   va_end(list);
 
-  return memWrite(buffer, 1, len, f);
+  return (int)memWrite(buffer, 1, len, f);
 }
 
 /* ===========================================================================
