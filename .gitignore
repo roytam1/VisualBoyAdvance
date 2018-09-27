@@ -1,0 +1,17 @@
+# Windows
+*.obj
+*.lib
+*.exe
+
+*.idb
+*.pdb
+
+*.ncb
+*.suo
+*.user
+Release
+mfc_release
+
+# *nix
+*.o
+*.a
