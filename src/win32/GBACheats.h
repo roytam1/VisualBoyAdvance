@@ -54,6 +54,7 @@ class GBACheatSearch : public CDialog
   enum { IDD = IDD_CHEATS };
   CEdit  m_value;
   CListCtrl  m_list;
+  CFont m_font;
   int    valueType;
   int    sizeType;
   int    searchType;
@@ -149,6 +150,7 @@ class GBACheatList : public CDialog
   enum { IDD = IDD_CHEAT_LIST };
   CButton  m_restore;
   CListCtrl  m_list;
+  CFont m_font;
   //}}AFX_DATA
 
 

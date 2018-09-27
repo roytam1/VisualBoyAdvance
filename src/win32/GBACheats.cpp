@@ -233,8 +233,11 @@ BOOL GBACheatSearch::OnInitDialog()
   temp = winResLoadString(IDS_NEW_VALUE);
   m_list.InsertColumn(2, temp, LVCFMT_CENTER, 125, 2);
   
-  m_list.SetFont(CFont::FromHandle((HFONT)GetStockObject(SYSTEM_FIXED_FONT)),
-                 TRUE);
+  /*m_list.SetFont(CFont::FromHandle((HFONT)GetStockObject(OEM_FIXED_FONT)),
+                 TRUE);*/
+  
+  m_font.CreatePointFont(90,"Terminal"); 
+  m_list.SetFont(&m_font);
 
   m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT);
   
@@ -854,14 +857,17 @@ BOOL GBACheatList::OnInitDialog()
   CDialog::OnInitDialog();
   
   CString temp = winResLoadString(IDS_CODE);
-  m_list.InsertColumn(0, temp, LVCFMT_LEFT, 170, 0);
+  m_list.InsertColumn(0, temp, LVCFMT_LEFT, 160, 0);
   temp = winResLoadString(IDS_DESCRIPTION);
   m_list.InsertColumn(1, temp, LVCFMT_LEFT, 150, 1);
   temp = winResLoadString(IDS_STATUS);
-  m_list.InsertColumn(2, temp, LVCFMT_LEFT, 80, 1);
+  m_list.InsertColumn(2, temp, LVCFMT_LEFT, 70, 1);
   
-  m_list.SetFont(CFont::FromHandle((HFONT)GetStockObject(SYSTEM_FIXED_FONT)),
-                 TRUE);
+  /*m_list.SetFont(CFont::FromHandle((HFONT)GetStockObject(OEM_FIXED_FONT)),
+                 TRUE);*/
+  
+  m_font.CreatePointFont(90,"Terminal"); 
+  m_list.SetFont(&m_font);
 
   m_list.SetExtendedStyle(LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);  
   
