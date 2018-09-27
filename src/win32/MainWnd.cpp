@@ -780,7 +780,7 @@ void MainWnd::winSaveCheatListDefault()
 	}
 
   if(!dir.GetLength())
-    dir = getDirFromFile(filename);
+    dir = getDirFromFile(theApp.filename);
 
   if(isDriveRoot(dir))
     filename.Format("%s%s.clt", dir, name);
@@ -822,7 +822,7 @@ void MainWnd::winLoadCheatListDefault()
 	}
 
   if(!dir.GetLength())
-    dir = getDirFromFile(filename);
+    dir = getDirFromFile(theApp.filename);
 
   if(isDriveRoot(dir))
     filename.Format("%s%s.clt", dir, name);
