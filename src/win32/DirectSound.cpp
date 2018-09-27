@@ -31,6 +31,7 @@
 #include "../Sound.h"
 
 // DirectSound8
+#define DIRECTSOUND_VERSION 0x800
 #include <Dsound.h>
 #pragma comment( lib, "Dsound" )
 #pragma comment( lib, "Dxguid" )
