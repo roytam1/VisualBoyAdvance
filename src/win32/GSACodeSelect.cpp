@@ -94,6 +94,7 @@ BOOL GSACodeSelect::OnInitDialog()
   fread(&games, 1, 4, f);
   while(games > 0) {
     fread(&len, 1, 4, f);
+    if(len > 1023) break;
     fread(buffer, 1, len, f);
     buffer[len] = 0;
     m_games.AddString(buffer);
