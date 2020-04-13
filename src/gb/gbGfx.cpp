@@ -250,7 +250,7 @@ void gbRenderLine()
       
       if(y >= inUseRegister_WY) {
 
-        if (gbWindowLine>143)
+        if (gbWindowLine == -1)
           gbWindowLine = 0;
 
         int wx = register_WX;
