@@ -882,7 +882,7 @@ void systemDrawScreen()
     utilWriteBMP(bmp, width, height, pix);
     theApp.aviRecorder->AddFrame(theApp.aviFrameNumber, bmp);
     
-    delete bmp;
+    delete [] bmp;
   }
 
   if( theApp.ifbFunction ) {
@@ -1879,7 +1879,7 @@ void VBA::updatePriority()
 bool VBA::detectMMX()
 {
   bool support = false;
-  char brand[13];
+  char brand[12]; // not zero terminated
 
   // check for Intel chip
   __try {

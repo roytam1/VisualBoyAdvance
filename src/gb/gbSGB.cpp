@@ -255,22 +255,22 @@ void gbSgbDrawBorderTile(int x, int y, int tile, int attr)
       if(flipY)
         yyy = 7 - yy;
 
-      u16 c = gbPalette[palette + color];
+      u16 cc = gbPalette[palette + color];
 
       // Fix for Super Snaky ???
       // (it allows SGB borders to not redraw on the GB screen)
       //if(!color)
-      //  c = gbPalette[0];
+      //  cc = gbPalette[0];
       if(((yy < 40 || yy >= 184) || (xx < 48 || xx >= 208)) && (color || (gbSgbResetFlag == true))) {
         switch(systemColorDepth) {
         case 16:
-          gbSgbDraw16Bit(dest + yyy*(256+2) + xxx, c);
+          gbSgbDraw16Bit(dest + yyy*(256+2) + xxx, cc);
           break;
         case 24:
-          gbSgbDraw24Bit(dest8 + (yyy*256+xxx)*3, c);
+          gbSgbDraw24Bit(dest8 + (yyy*256+xxx)*3, cc);
           break;
         case 32:
-          gbSgbDraw32Bit(dest32 + yyy*(256+1)+xxx, c);
+          gbSgbDraw32Bit(dest32 + yyy*(256+1)+xxx, cc);
           break;
         }
       }
