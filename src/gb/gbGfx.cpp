@@ -171,8 +171,7 @@ void gbRenderLine()
               c = c + 4*palette;
             }
           }
-          gbLineMix[x] = gbColorOption ? gbColorFilter[gbPalette[c] & 0x7FFF] :
-            gbPalette[c] & 0x7FFF;
+          gbLineMix[x] = gbColorOption ? gbColorFilter[gbPalette[c] & 0x7FFF] : gbPalette[c] & 0x7FFF;
           x++;
           if(x >= 160)
             break;
@@ -220,10 +219,10 @@ void gbRenderLine()
       // Also added the gbColorOption (fixes Dracula Densetsu II color problems)
       for(int i = 0; i < 160; i++)
       {
-        u16 color = gbColorOption ? gbColorFilter[0x7FFF] :
-                    0x7FFF;
+        u16 color = gbColorOption ? gbColorFilter[0x7FFF] : 0x7FFF;
         if (!gbCgbMode)
-        color = gbColorOption ? gbColorFilter[gbPalette[gbBgpLine[i+(gbSpeed ? 5 : 11)+gbSpritesTicks[i]*(gbSpeed ? 2 : 4)]&3] & 0x7FFF] :
+        color = gbColorOption ?
+		        gbColorFilter[gbPalette[gbBgpLine[i+(gbSpeed ? 5 : 11)+gbSpritesTicks[i]*(gbSpeed ? 2 : 4)]&3] & 0x7FFF] :
                 gbPalette[gbBgpLine[i+(gbSpeed ? 5 : 11)+gbSpritesTicks[i]*(gbSpeed ? 2 : 4)]&3] & 0x7FFF;
         gbLineMix[i] = color;
         gbLineBuffer[i] = 0;
@@ -234,8 +233,7 @@ void gbRenderLine()
     // LCDC.0 also enables/disables the window in !gbCgbMode ?!?!
     // (tested on real hardware)
     // This fixes Last Bible II & Zankurou Musouken
-    if((register_LCDC & 0x01 || gbCgbMode) && (register_LCDC & 0x20) &&
-        (layerSettings & 0x2000) && (gbWindowLine != -2)) {
+    if((register_LCDC & 0x01 || gbCgbMode) && (register_LCDC & 0x20) && (layerSettings & 0x2000) && (gbWindowLine != -2)) {
       int i = 0;
       // Fix (accurate emulation) for most of the window display problems
       // (ie. Zen - Intergalactic Ninja, Urusei Yatsura...).
@@ -252,7 +250,7 @@ void gbRenderLine()
       
       if(y >= inUseRegister_WY) {
 
-        if (gbWindowLine == -1)
+        if ((gbWindowLine>144))
           gbWindowLine = 0;
 
         int wx = register_WX;
@@ -368,8 +366,7 @@ void gbRenderLine()
                   c = c + 4*palette;            
                 }
               }
-              gbLineMix[x] = gbColorOption ? gbColorFilter[gbPalette[c] & 0x7FFF] :
-                gbPalette[c] & 0x7FFF;
+              gbLineMix[x] = gbColorOption ? gbColorFilter[gbPalette[c] & 0x7FFF] : gbPalette[c] & 0x7FFF;
               }
               x++;
               if(x >= 160)
@@ -406,11 +403,9 @@ void gbRenderLine()
         gbWindowLine = 0;
     }
   } else {
-    u16 color = gbColorOption ? gbColorFilter[0x7FFF] :
-                0x7FFF;
+    u16 color = gbColorOption ? gbColorFilter[0x7FFF] : 0x7FFF;
     if (!gbCgbMode)
-    color = gbColorOption ? gbColorFilter[gbPalette[0] & 0x7FFF] :
-            gbPalette[0] & 0x7FFF;
+    color = gbColorOption ? gbColorFilter[gbPalette[0] & 0x7FFF] : gbPalette[0] & 0x7FFF;
     for(int i = 0; i < 160; i++)
     {
       gbLineMix[i] = color;
@@ -542,8 +537,7 @@ void gbDrawSpriteTile(int tile, int x,int y,int t, int flags,
       }
     }
 
-    gbLineMix[xxx] = gbColorOption ? gbColorFilter[gbPalette[c] & 0x7FFF] :
-      gbPalette[c] & 0x7FFF;
+    gbLineMix[xxx] = gbColorOption ? gbColorFilter[gbPalette[c] & 0x7FFF] : gbPalette[c] & 0x7FFF;
   }
 }
 

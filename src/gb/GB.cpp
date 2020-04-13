@@ -4989,8 +4989,7 @@ void gbEmulate(int ticksToStop)
                     {
                       u16 color = gbColorOption ? gbColorFilter[0] : 0;
                       if (!gbCgbMode)
-                      color = gbColorOption ? gbColorFilter[gbPalette[3] & 0x7FFF] :
-                        gbPalette[3] & 0x7FFF;
+                      color = gbColorOption ? gbColorFilter[gbPalette[3] & 0x7FFF] : gbPalette[3] & 0x7FFF;
                       for(int i = 0; i < 160; i++)
                       {
                         gbLineMix[i] = color;
@@ -5066,11 +5065,9 @@ void gbEmulate(int ticksToStop)
           u8 register_LYLcdOff = ((register_LY+154)%154);
           for (register_LY=0;register_LY <=  0x90;register_LY++)
           {
-            u16 color = gbColorOption ? gbColorFilter[0x7FFF] :
-                        0x7FFF;
+            u16 color = gbColorOption ? gbColorFilter[0x7FFF] : 0x7FFF;
             if (!gbCgbMode)
-            color = gbColorOption ? gbColorFilter[gbPalette[0] & 0x7FFF] :
-                        gbPalette[0] & 0x7FFF;
+            color = gbColorOption ? gbColorFilter[gbPalette[0] & 0x7FFF] : gbPalette[0] & 0x7FFF;
             for(int i = 0; i < 160; i++)
             {
               gbLineMix[i] = color;
@@ -5093,11 +5090,9 @@ void gbEmulate(int ticksToStop)
           if (register_LY<144)
           {
 
-            u16 color = gbColorOption ? gbColorFilter[0x7FFF] :
-                        0x7FFF;
+            u16 color = gbColorOption ? gbColorFilter[0x7FFF] : 0x7FFF;
             if (!gbCgbMode)
-            color = gbColorOption ? gbColorFilter[gbPalette[0] & 0x7FFF] :
-                        gbPalette[0] & 0x7FFF;
+            color = gbColorOption ? gbColorFilter[gbPalette[0] & 0x7FFF] : gbPalette[0] & 0x7FFF;
             for(int i = 0; i < 160; i++)
             {
               gbLineMix[i] = color;
