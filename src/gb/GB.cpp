@@ -1087,6 +1087,7 @@ void  gbWriteMemory(register u16 address, register u8 value)
       //register_STAT = (register_STAT & 0x87) |
       //      (value & 0x7c);
       gbMemory[0xff41] = register_STAT = (value & 0xf8) | (register_STAT & 0x07); // fix ?
+      // TODO:
       // GB bug from Devrs FAQ
       // Corrected : it happens if Lcd Mode<2, but also if LY == LYC whatever
       // Lcd Mode is, and if !gbInt48Signal in all cases. The screen being off
@@ -1096,7 +1097,9 @@ void  gbWriteMemory(register u16 address, register u8 value)
       if((gbHardware & 5) && (((!gbInt48Signal) && (gbLcdMode<2) && (register_LCDC & 0x80)) ||
           (register_LY == register_LYC)))
       {
-        gbMemory[0xff0f] = register_IF |=2;
+        // send LCD interrupt only if no interrupt 48h signal...
+        if (!gbInt48Signal)
+          gbMemory[0xff0f] = register_IF |= 2;
       }
     
       gbInt48Signal &= ((register_STAT>>3) & 0xF);
@@ -1124,7 +1127,7 @@ void  gbWriteMemory(register u16 address, register u8 value)
           {
             gbMemory[0xff0f] = register_IF |=2;
           }
-          gbInt48Signal |= 4;
+          //gbInt48Signal |= 4;
         }
         gbCompareLYToLYC();
 
