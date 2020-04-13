@@ -1658,7 +1658,7 @@ u8 gbReadOpcode(register u16 address)
         return register_SCX;
       case 0x44:
       if (((gbHardware & 7) && ((gbLcdMode == 1) && (gbLcdTicks == 0x71))) ||
-          (!(register_LCDC && 0x80)))
+          (!(register_LCDC & 0x80)))
         return 0;
       else
         return register_LY;
@@ -1918,7 +1918,7 @@ u8 gbReadMemory(register u16 address)
       return register_SCX;
     case 0x44:
       if (((gbHardware & 7) && ((gbLcdMode == 1) && (gbLcdTicks == 0x71))) ||
-          (!(register_LCDC && 0x80)))
+          (!(register_LCDC & 0x80)))
         return (0);
       else
         return register_LY;
@@ -2193,11 +2193,6 @@ void gbReset()
   gbDmaTicks = 0;
   clockTicks = 0;
 
-  if(gbSpeed) {
-    gbSpeedSwitch();
-    gbMemory[0xff4d] = 0;
-  }
-
   // clean Wram
   // This kinda emulates the startup state of Wram on GB/C (not very accurate,
   // but way closer to the reality than filling it with 00es or FFes).
@@ -2221,14 +2216,23 @@ void gbReset()
           gbMemory[temp] = 0xff;
   }
 
+  if(gbSpeed) {
+    gbSpeedSwitch();
+    gbMemory[0xff4d] = 0;
+  }
 
-      
+  // GB bios set this memory area to 0
+  // Fixes Pitman (J) title screen
+  if (gbHardware & 0x1) {
+    memset(&gbMemory[0x8000], 0x0, 0x2000);
+  }
+
   // clean LineBuffer
   if (gbLineBuffer != NULL)
-    memset(gbLineBuffer, 0, sizeof(gbLineBuffer));
+    memset(gbLineBuffer, 0, sizeof(*gbLineBuffer));
   // clean Pix
   if (pix != NULL)
-    memset(pix, 0, sizeof(pix));
+    memset(pix, 0, sizeof(*pix));
   // clean Vram
   if (gbVram != NULL)
     memset(gbVram, 0, 0x4000);
