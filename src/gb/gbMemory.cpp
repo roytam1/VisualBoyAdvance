@@ -390,7 +390,7 @@ void mapperMBC3ROM(u16 address, u8 value)
     gbDataMBC3.mapperRAMEnable = ( ( value & 0x0a) == 0x0a ? 1 : 0);
     break;
   case 0x2000: // ROM bank select
-    value = value & 0x7f;
+    value = value & 0xff;
     if(value == 0)
       value = 1;
     if(value == gbDataMBC3.mapperROMBank)
