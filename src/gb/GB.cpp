@@ -605,16 +605,16 @@ u16 gbcGetNewBGR15(int r, int g, int b)
 
 #if TRANSFORM_MODE == 0
 /* original VBA */
-	int nr = gbGetValue(gbGetValue(4, 14, g),
-	                    gbGetValue(24, 29, g), r) - 4;
-	int ng = gbGetValue(gbGetValue(4 + gbGetValue(0, 5, r),
+	int nr = gbGetValue(gbGetValue(2, 14, g),
+	                    gbGetValue(24, 29, g), r) - 2;
+	int ng = gbGetValue(gbGetValue(2 + gbGetValue(0, 5, r),
 	                               14 + gbGetValue(0, 3, r), b),
 	                    gbGetValue(24 + gbGetValue(0, 3, r),
-	                               29 + gbGetValue(0, 1, r), b), g) - 4;
-	int nb = gbGetValue(gbGetValue(4 + gbGetValue(0, 5, r),
+	                               29 + gbGetValue(0, 1, r), b), g) - 2;
+	int nb = gbGetValue(gbGetValue(2 + gbGetValue(0, 5, r),
 	                               14 + gbGetValue(0, 3, r), g),
 	                    gbGetValue(24 + gbGetValue(0, 3, r),
-	                               29 + gbGetValue(0, 1, r), g), b) - 4;
+	                               29 + gbGetValue(0, 1, r), g), b) - 2;
 
 	return (nb << 10) | (ng << 5) | nr;
 #endif
