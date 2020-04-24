@@ -598,10 +598,18 @@ int inline gbGetValue(int min, int max, int v)
 	return (int)(min + (float)(max - min) * (2.0 * (v / 31.0) - (v / 31.0) * (v / 31.0)));
 }
 
+#define M_RGB8_TO_RGB5(X) ((((X) & 0xF8) << 7) | (((X) & 0xF800) >> 6) | (((X) & 0xF80000) >> 19))
+
 u16 gbcGetNewBGR15(int r, int g, int b)
 {
-
 #define TRANSFORM_MODE 0
+
+#if TRANSFORM_MODE == 2
+/* from gambatte */
+	return M_RGB8_TO_RGB5(((r * 13 + g * 2 + b) >> 1) << 16
+	| (g * 3 + b) << 9
+	| (r * 3 + g * 2 + b * 11) >> 1);
+#endif
 
 #if TRANSFORM_MODE == 1
 /* from vba-recording */
