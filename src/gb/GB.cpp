@@ -635,7 +635,7 @@ u16 gbcGetNewBGR15(int r, int g, int b)
 	unsigned bFinal = 0;
 
 	// Perform gamma expansion
-	float adjustedGamma = targetGamma - 0.0f;
+	float adjustedGamma = targetGamma - 1.1f;
 	float rFloat = pow(r * rgbMaxInv, adjustedGamma);
 	float gFloat = pow(g * rgbMaxInv, adjustedGamma);
 	float bFloat = pow(b * rgbMaxInv, adjustedGamma);
