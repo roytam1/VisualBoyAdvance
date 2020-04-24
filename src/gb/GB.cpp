@@ -610,6 +610,19 @@ u16 gbcGetNewBGR15(int r, int g, int b)
 {
 #define TRANSFORM_MODE 0
 
+#if TRANSFORM_MODE == 4
+/* from mednafen */
+	int nr = r * 226 + g * 29 + b * 0;
+	int ng = r * 29 + g * 197 + b * 29;
+	int nb = r * 30 + g * 73 + b * 152;
+
+	nr /= 31;
+	ng /= 31;
+	nb /= 31;
+
+	return M_RGB8_TO_RGB5((nr << 16) | (ng << 8) | (nb << 0));
+#endif
+
 #if TRANSFORM_MODE == 3
 /* from BizHawk */
 	return M_RGB8_TO_RGB5((gbGBAGamma_8bit(r) << 16) | (gbGBAGamma_8bit(g) << 8) | gbGBAGamma_8bit(b));
