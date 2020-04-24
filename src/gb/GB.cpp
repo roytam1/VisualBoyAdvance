@@ -594,6 +594,11 @@ u8 ZeroTable[256] = {
 #define GBSAVE_GAME_VERSION_11 11
 #define GBSAVE_GAME_VERSION GBSAVE_GAME_VERSION_11
 
+int inline _limit(int v, int min, int max)
+{
+	return ( v < min ? min : (v > max ? max : v) );
+}
+
 int inline gbGetValue(int min, int max, int v)
 {
 	return (int)(min + (float)(max - min) * (2.0 * (v / 31.0) - (v / 31.0) * (v / 31.0)));
@@ -661,7 +666,7 @@ u16 gbcGetNewBGR15(int r, int g, int b)
 	gFinal = (unsigned)((gCorrect * rgbMax) + 0.5f) & 0x1F;
 	bFinal = (unsigned)((bCorrect * rgbMax) + 0.5f) & 0x1F;
 
-	return ((bFinal) << 10) | ((gFinal) << 5) | (rFinal);
+	return (_limit(bFinal,2,29) << 10) | (_limit(gFinal,2,29) << 5) | _limit(rFinal,2,29);
 #endif
 
 #if TRANSFORM_MODE == 4
