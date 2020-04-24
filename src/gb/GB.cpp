@@ -608,7 +608,61 @@ int inline gbGBAGamma_8bit(int v)
 
 u16 gbcGetNewBGR15(int r, int g, int b)
 {
-#define TRANSFORM_MODE 0
+#define TRANSFORM_MODE 5
+
+#if TRANSFORM_MODE == 5
+/* from gambatte-libretro */
+
+/* GBC colour correction factors */
+#define GBC_CC_R  0.87f
+#define GBC_CC_G  0.66f
+#define GBC_CC_B  0.79f
+#define GBC_CC_RG 0.115f
+#define GBC_CC_RB 0.14f
+#define GBC_CC_GR 0.18f
+#define GBC_CC_GB 0.07f
+#define GBC_CC_BR -0.05f
+#define GBC_CC_BG 0.225f
+
+	float rgbMax = 31.0f;
+	float rgbMaxInv = 1.0f / rgbMax;
+
+	float targetGamma = 2.2f;
+	float displayGammaInv = 1.0f / targetGamma;
+
+	unsigned rFinal = 0;
+	unsigned gFinal = 0;
+	unsigned bFinal = 0;
+
+	// Perform gamma expansion
+	float adjustedGamma = targetGamma - 0.0f;
+	float rFloat = pow(r * rgbMaxInv, adjustedGamma);
+	float gFloat = pow(g * rgbMaxInv, adjustedGamma);
+	float bFloat = pow(b * rgbMaxInv, adjustedGamma);
+
+	// Perform colour mangling
+	float rCorrect = (GBC_CC_R  * rFloat) + (GBC_CC_GR * gFloat) + (GBC_CC_BR * bFloat);
+	float gCorrect = (GBC_CC_RG * rFloat) + (GBC_CC_G  * gFloat) + (GBC_CC_BG * bFloat);
+	float bCorrect = (GBC_CC_RB * rFloat) + (GBC_CC_GB * gFloat) + (GBC_CC_B  * bFloat);
+	// Range check...
+	rCorrect = rCorrect > 0.0f ? rCorrect : 0.0f;
+	gCorrect = gCorrect > 0.0f ? gCorrect : 0.0f;
+	bCorrect = bCorrect > 0.0f ? bCorrect : 0.0f;
+	// Perform gamma compression
+	rCorrect = pow(rCorrect, displayGammaInv);
+	gCorrect = pow(gCorrect, displayGammaInv);
+	bCorrect = pow(bCorrect, displayGammaInv);
+	// Range check...
+	rCorrect = rCorrect > 1.0f ? 1.0f : rCorrect;
+	gCorrect = gCorrect > 1.0f ? 1.0f : gCorrect;
+	bCorrect = bCorrect > 1.0f ? 1.0f : bCorrect;
+	// Convert back to 5bit unsigned
+	rFinal = (unsigned)((rCorrect * rgbMax) + 0.5f) & 0x1F;
+	gFinal = (unsigned)((gCorrect * rgbMax) + 0.5f) & 0x1F;
+	bFinal = (unsigned)((bCorrect * rgbMax) + 0.5f) & 0x1F;
+
+	return ((bFinal) << 10) | ((gFinal) << 5) | (rFinal);
+#endif
 
 #if TRANSFORM_MODE == 4
 /* from mednafen */
