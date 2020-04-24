@@ -1370,6 +1370,11 @@ void VBA::loadSettings()
     gbEmulatorType = 1;
   gbColorOption = regQueryDwordValue("colorOption", 0);
 
+  gbColorGammaAdj100 = regQueryDwordValue("colorGammaAdj", 0);
+  gbColorDesaturate100 = regQueryDwordValue("colorDesaturate", 0);
+  gbColorBrightness100 = regQueryDwordValue("colorBrightness", 0);
+  gbColorLimit = regQueryDwordValue("colorLimit", 0);
+
   threadPriority = regQueryDwordValue("priority", 2);
 
   if(threadPriority < 0 || threadPriority >3)

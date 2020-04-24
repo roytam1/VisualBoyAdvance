@@ -604,18 +604,40 @@ int inline gbGetValue(int min, int max, int v)
 	return (int)(min + (float)(max - min) * (2.0 * (v / 31.0) - (v / 31.0) * (v / 31.0)));
 }
 
+void gbColorDesaturate(unsigned *r, unsigned *g, unsigned *b, int brightnessAdj, int percent)
+{
+	unsigned nr, ng, nb;
+	
+	float brightnessAmount = (brightnessAdj / 100.0f) * 31.0f;
+	float desatAmount = percent / 100.0f;
+	float intensity = 0.3f * (*r) + 0.59f * (*g) + 0.11f * (*b);
+
+	nr = (unsigned)((intensity * desatAmount + (*r) * (1.0f - desatAmount)) + brightnessAmount);
+	ng = (unsigned)((intensity * desatAmount + (*g) * (1.0f - desatAmount)) + brightnessAmount);
+	nb = (unsigned)((intensity * desatAmount + (*b) * (1.0f - desatAmount)) + brightnessAmount);
+
+	*r = _limit(nr,0,31);
+	*g = _limit(ng,0,31);
+	*b = _limit(nb,0,31);
+}
+
 int inline gbGBAGamma_8bit(int v)
 {
 	return (int)(pow(v / 31.0, 3.5 / 2.2) * 255.0 + 0.5);
 }
 
-#define M_RGB8_TO_RGB5(X) ((((X) & 0xF8) << 7) | (((X) & 0xF800) >> 6) | (((X) & 0xF80000) >> 19))
+#define MAX_TRANSFORM_MODE_IDX 5
 
 u16 gbcGetNewBGR15(int r, int g, int b)
 {
-#define TRANSFORM_MODE 5
+	unsigned rFinal = 0;
+	unsigned gFinal = 0;
+	unsigned bFinal = 0;
 
-#if TRANSFORM_MODE == 5
+switch(gbColorOption - 1) {
+
+case 5:
+{
 /* from gambatte-libretro */
 
 /* GBC colour correction factors */
@@ -635,12 +657,8 @@ u16 gbcGetNewBGR15(int r, int g, int b)
 	float targetGamma = 2.2f;
 	float displayGammaInv = 1.0f / targetGamma;
 
-	unsigned rFinal = 0;
-	unsigned gFinal = 0;
-	unsigned bFinal = 0;
-
 	// Perform gamma expansion
-	float adjustedGamma = targetGamma - 1.1f;
+	float adjustedGamma = targetGamma - (gbColorGammaAdj100 / 100.0f);
 	float rFloat = pow(r * rgbMaxInv, adjustedGamma);
 	float gFloat = pow(g * rgbMaxInv, adjustedGamma);
 	float bFloat = pow(b * rgbMaxInv, adjustedGamma);
@@ -666,10 +684,12 @@ u16 gbcGetNewBGR15(int r, int g, int b)
 	gFinal = (unsigned)((gCorrect * rgbMax) + 0.5f) & 0x1F;
 	bFinal = (unsigned)((bCorrect * rgbMax) + 0.5f) & 0x1F;
 
-	return (_limit(bFinal,2,29) << 10) | (_limit(gFinal,2,29) << 5) | _limit(rFinal,2,29);
-#endif
+//	return (_limit(bFinal,2,29) << 10) | (_limit(gFinal,2,29) << 5) | _limit(rFinal,2,29);
+break;
+}
 
-#if TRANSFORM_MODE == 4
+case 4:
+{
 /* from mednafen */
 	int nr = r * 226 + g * 29 + b * 0;
 	int ng = r * 29 + g * 197 + b * 29;
@@ -679,48 +699,85 @@ u16 gbcGetNewBGR15(int r, int g, int b)
 	ng /= 31;
 	nb /= 31;
 
-	return M_RGB8_TO_RGB5((nr << 16) | (ng << 8) | (nb << 0));
-#endif
+	// Convert back to 5bit
+	rFinal = nr >> 3;
+	gFinal = ng >> 3;
+	bFinal = nb >> 3;
 
-#if TRANSFORM_MODE == 3
+//	return M_RGB8_TO_RGB5((nr << 16) | (ng << 8) | (nb << 0));
+break;
+}
+
+case 3:
+{
 /* from BizHawk */
-	return M_RGB8_TO_RGB5((gbGBAGamma_8bit(r) << 16) | (gbGBAGamma_8bit(g) << 8) | gbGBAGamma_8bit(b));
-#endif
+	rFinal = gbGBAGamma_8bit(r) >> 3;
+	gFinal = gbGBAGamma_8bit(g) >> 3;
+	bFinal = gbGBAGamma_8bit(b) >> 3;
 
-#if TRANSFORM_MODE == 2
-/* from gambatte */
-	return M_RGB8_TO_RGB5(((r * 13 + g * 2 + b) >> 1) << 16
-	| (g * 3 + b) << 9
-	| (r * 3 + g * 2 + b * 11) >> 1);
-#endif
+//	return M_RGB8_TO_RGB5((gbGBAGamma_8bit(r) << 16) | (gbGBAGamma_8bit(g) << 8) | gbGBAGamma_8bit(b));
+break;
+}
 
-#if TRANSFORM_MODE == 1
+case 2:
+{
+/* from gambatte (fast) */
+	rFinal = (((r * 13 + g * 2 + b) >> 1) << 16) >> 3;
+	gFinal = ((g * 3 + b) << 1) >> 3;
+	bFinal = ((r * 3 + g * 2 + b * 11) >> 1) >> 3;
+
+//	return M_RGB8_TO_RGB5(((r * 13 + g * 2 + b) >> 1) << 16
+//	| (g * 3 + b) << 9
+///	| (r * 3 + g * 2 + b * 11) >> 1);
+break;
+}
+
+case 1:
+{
 /* from vba-recording */
-	r = (r * 13 + g * 2 + b * 1 + 8) >> 4;
-	g = (r * 1 + g * 12 + b * 3 + 8) >> 4;
-	b = (r * 2 + g * 2 + b * 12 + 8) >> 4;
-	return (b << 10) | (g << 5) | r;
-#endif
+	rFinal = (r * 13 + g * 2 + b * 1 + 8) >> 4;
+	gFinal = (r * 1 + g * 12 + b * 3 + 8) >> 4;
+	bFinal = (r * 2 + g * 2 + b * 12 + 8) >> 4;
+//	return (b << 10) | (g << 5) | r;
+break;
+}
 
-#if TRANSFORM_MODE == 0
+case 0:
+default:
+{
 /* original VBA */
-	int nr = gbGetValue(gbGetValue(2, 14, g),
-	                    gbGetValue(24, 29, g), r) - 2;
-	int ng = gbGetValue(gbGetValue(2 + gbGetValue(0, 5, r),
+	rFinal = gbGetValue(gbGetValue(0, 14, g),
+	                    gbGetValue(24, 29, g), r);
+	gFinal = gbGetValue(gbGetValue(0 + gbGetValue(0, 5, r),
 	                               14 + gbGetValue(0, 3, r), b),
 	                    gbGetValue(24 + gbGetValue(0, 3, r),
-	                               29 + gbGetValue(0, 1, r), b), g) - 2;
-	int nb = gbGetValue(gbGetValue(2 + gbGetValue(0, 5, r),
+	                               29 + gbGetValue(0, 1, r), b), g);
+	bFinal = gbGetValue(gbGetValue(0 + gbGetValue(0, 5, r),
 	                               14 + gbGetValue(0, 3, r), g),
 	                    gbGetValue(24 + gbGetValue(0, 3, r),
-	                               29 + gbGetValue(0, 1, r), g), b) - 2;
+	                               29 + gbGetValue(0, 1, r), g), b);
 
-	return (nb << 10) | (ng << 5) | nr;
-#endif
+//	return (nb << 10) | (ng << 5) | nr;
+break;
+}
+} // switch()
+
+	if(gbColorDesaturate100 || gbColorBrightness100)
+		gbColorDesaturate(&rFinal, &gFinal, &bFinal, gbColorBrightness100, gbColorDesaturate100);
+
+	if(gbColorLimit)
+		return (_limit(bFinal,gbColorLimit,31-gbColorLimit) << 10) | (_limit(gFinal,gbColorLimit,31-gbColorLimit) << 5) | _limit(rFinal,gbColorLimit,31-gbColorLimit);
+	else
+		return ((bFinal) << 10) | ((gFinal) << 5) | (rFinal);
 }
 
 void gbGenFilter()
 {
+	/* sanitize gbColorOption(s) */
+	gbColorOption = _limit(gbColorOption, 0, MAX_TRANSFORM_MODE_IDX+1);
+	gbColorBrightness100 = _limit(gbColorBrightness100, -100, 100);
+	gbColorDesaturate100 = _limit(gbColorDesaturate100, 0, 100);
+
 	for (int r = 0; r < 32; r++) {
 		for (int g = 0; g < 32; g++) {
 			for (int b = 0; b < 32; b++) {

@@ -45,6 +45,10 @@ int gbCgbMode = 0;
 
 u16 gbColorFilter[32768];
 int gbColorOption = 0;
+int gbColorGammaAdj100 = 0;
+int gbColorDesaturate100 = 0;
+int gbColorBrightness100 = 0;
+int gbColorLimit = 0;
 int gbPaletteOption = 0;
 int gbEmulatorType = 0;
 int gbBorderOn = 1;
