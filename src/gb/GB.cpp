@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <memory.h>
+#include <math.h>
 #include <assert.h>
 
 #include "../System.h"
@@ -598,11 +599,21 @@ int inline gbGetValue(int min, int max, int v)
 	return (int)(min + (float)(max - min) * (2.0 * (v / 31.0) - (v / 31.0) * (v / 31.0)));
 }
 
+int inline gbGBAGamma_8bit(int v)
+{
+	return (int)(pow(v / 31.0, 3.5 / 2.2) * 255.0 + 0.5);
+}
+
 #define M_RGB8_TO_RGB5(X) ((((X) & 0xF8) << 7) | (((X) & 0xF800) >> 6) | (((X) & 0xF80000) >> 19))
 
 u16 gbcGetNewBGR15(int r, int g, int b)
 {
 #define TRANSFORM_MODE 0
+
+#if TRANSFORM_MODE == 3
+/* from BizHawk */
+	return M_RGB8_TO_RGB5((gbGBAGamma_8bit(r) << 16) | (gbGBAGamma_8bit(g) << 8) | gbGBAGamma_8bit(b));
+#endif
 
 #if TRANSFORM_MODE == 2
 /* from gambatte */
