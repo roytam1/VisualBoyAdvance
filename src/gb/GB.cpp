@@ -593,30 +593,42 @@ u8 ZeroTable[256] = {
 #define GBSAVE_GAME_VERSION_11 11
 #define GBSAVE_GAME_VERSION GBSAVE_GAME_VERSION_11
 
-int inline gbGetValue(int min,int max,int v)
+int inline gbGetValue(int min, int max, int v)
 {
-  return (int)(min+(float)(max-min)*(2.0*(v/31.0)-(v/31.0)*(v/31.0)));
+	return (int)(min + (float)(max - min) * (2.0 * (v / 31.0) - (v / 31.0) * (v / 31.0)));
+}
+
+u16 gbcGetNewBGR15(int r, int g, int b)
+{
+
+#define TRANSFORM_MODE 0
+
+#if TRANSFORM_MODE == 0
+/* original VBA */
+	int nr = gbGetValue(gbGetValue(4, 14, g),
+	                    gbGetValue(24, 29, g), r) - 4;
+	int ng = gbGetValue(gbGetValue(4 + gbGetValue(0, 5, r),
+	                               14 + gbGetValue(0, 3, r), b),
+	                    gbGetValue(24 + gbGetValue(0, 3, r),
+	                               29 + gbGetValue(0, 1, r), b), g) - 4;
+	int nb = gbGetValue(gbGetValue(4 + gbGetValue(0, 5, r),
+	                               14 + gbGetValue(0, 3, r), g),
+	                    gbGetValue(24 + gbGetValue(0, 3, r),
+	                               29 + gbGetValue(0, 1, r), g), b) - 4;
+
+	return (nb << 10) | (ng << 5) | nr;
+#endif
 }
 
 void gbGenFilter()
 {
-  for (int r=0;r<32;r++) {
-    for (int g=0;g<32;g++) {
-      for (int b=0;b<32;b++) {
-        int nr=gbGetValue(gbGetValue(4,14,g),
-                          gbGetValue(24,29,g),r)-4;
-        int ng=gbGetValue(gbGetValue(4+gbGetValue(0,5,r),
-                                     14+gbGetValue(0,3,r),b),
-                          gbGetValue(24+gbGetValue(0,3,r),
-                                     29+gbGetValue(0,1,r),b),g)-4;
-        int nb=gbGetValue(gbGetValue(4+gbGetValue(0,5,r),
-                                     14+gbGetValue(0,3,r),g),
-                          gbGetValue(24+gbGetValue(0,3,r),
-                                     29+gbGetValue(0,1,r),g),b)-4;
-        gbColorFilter[(b<<10)|(g<<5)|r]=(nb<<10)|(ng<<5)|nr;
-      }
-    }
-  }
+	for (int r = 0; r < 32; r++) {
+		for (int g = 0; g < 32; g++) {
+			for (int b = 0; b < 32; b++) {
+				gbColorFilter[(b << 10) | (g << 5) | r] = gbcGetNewBGR15(r, g, b);
+			}
+		}
+	}
 }
 
 bool gbIsGameboyRom(char * file)
