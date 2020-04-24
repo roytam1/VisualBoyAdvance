@@ -603,6 +603,14 @@ u16 gbcGetNewBGR15(int r, int g, int b)
 
 #define TRANSFORM_MODE 0
 
+#if TRANSFORM_MODE == 1
+/* from vba-recording */
+	r = (r * 13 + g * 2 + b * 1 + 8) >> 4;
+	g = (r * 1 + g * 12 + b * 3 + 8) >> 4;
+	b = (r * 2 + g * 2 + b * 12 + 8) >> 4;
+	return (b << 10) | (g << 5) | r;
+#endif
+
 #if TRANSFORM_MODE == 0
 /* original VBA */
 	int nr = gbGetValue(gbGetValue(2, 14, g),
